@@ -1,0 +1,27 @@
+{
+  "name": "mysql-employee-tracker",
+  "version": "1.0.0",
+  "description": "employee tracker application using nodejs and mysql",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "watch": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jenniwritescode/mysql-employee-tracker.git"
+  },
+  "author": "Jenni Hartman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jenniwritescode/mysql-employee-tracker/issues"
+  },
+  "homepage": "https://github.com/jenniwritescode/mysql-employee-tracker#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.2",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3"
+  }
+}
