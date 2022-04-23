@@ -28,8 +28,8 @@ function startPrompt() {
   inquirer
     .prompt([
       {
-        type: 'checkbox',
-        name: 'checkboxChoice',
+        type: 'list',
+        name: 'listChoice',
         message: 'Welcome to the Employee Tracker Database! Make a Selection:',
         choices: [
           'View all Employees',
@@ -42,7 +42,7 @@ function startPrompt() {
         ]
       }])
     .then(function (val) {
-      var myChoice = val.checkboxChoice.toString();
+      var myChoice = val.listChoice.toString();
       switch (myChoice) {
         case 'View all Employees':
           viewEmployees();
@@ -51,7 +51,7 @@ function startPrompt() {
           viewEmpByRole();
           break;
         case 'View all Employees By Department':
-          // viewEmpByDept();
+          viewEmpByDept();
           break;
 
         case 'Update Employee':
@@ -80,7 +80,7 @@ function viewEmployees() {
   connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;", 
   function(err, res) {
     if (err) throw err
-    log.green('------ List of All Employees ------', '\n');
+    log.green('\n', '------ List of All Employees ------', '\n');
     console.table(res);
     startPrompt();
 })
@@ -91,8 +91,19 @@ function viewEmpByRole() {
   connection.query("SELECT employee.first_name, employee.last_name, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id;", 
   function(err, res) {
   if (err) throw err
-  log.pink('------ List of Employees by Role ------', '\n');
+  log.teal('\n', '------ List of Employees by Role ------', '\n');
   console.table(res)
   startPrompt()
   })
 };
+
+// view all employees by dept function
+function viewEmpByDept() {
+  connection.query("SELECT employee.first_name, employee.last_name, department.name AS Department FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id;", 
+  function(err, res) {
+    if (err) throw err
+    log.yellow('\n', '------ List of Employees by Department ------', '\n');
+    console.table(res)
+    startPrompt()
+  })
+}
