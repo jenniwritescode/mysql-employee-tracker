@@ -39,6 +39,7 @@ function startPrompt() {
           'Add an Employee',
           'Add a Role',
           'Add a Department',
+          'EXIT'
         ]
       }])
     .then(function (val) {
@@ -69,11 +70,17 @@ function startPrompt() {
         case 'Add a Department':
           // addDept();
           break;
+        
+        case 'EXIT':
+          log.red('\n', 'Exiting Application...');
+          connection.end();
+          log.red('\n', 'Database Connection closed. Good-bye!')
+          process.exit();
       }
     });
 };
 
-// checkboxChoice functions below
+// list choice functions below
 
 // view all employees function
 function viewEmployees() {
