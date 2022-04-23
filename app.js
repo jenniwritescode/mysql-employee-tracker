@@ -3,6 +3,9 @@ const mysql = require("mysql");
 const fs = require("fs");
 const consoleTable = require("console.table");
 const inquirer = require("inquirer");
+const LogColors = require('./logColors');
+
+const log = new LogColors();
 
 // create mysql connection
 const connection = mysql.createConnection({
@@ -26,8 +29,8 @@ function startPrompt() {
     .prompt([
       {
         type: 'checkbox',
+        name: 'checkboxChoice',
         message: 'Welcome to the Employee Tracker Database! Make a Selection:',
-        name: 'checkboxChoices',
         choices: [
           'View all Employees',
           'View all Employees By Role',
@@ -36,15 +39,14 @@ function startPrompt() {
           'Add an Employee',
           'Add a Role',
           'Add a Department',
-        ],
-      },
-    ])
+        ]
+      }])
     .then(function (val) {
-      switch (val.choice) {
+      var myChoice = val.checkboxChoice.toString();
+      switch (myChoice) {
         case 'View all Employees':
-          // viewEmployees();
+          viewEmployees();
           break;
-
         case 'View all Employees By Role':
           // viewEmpByRole();
           break;
@@ -69,4 +71,17 @@ function startPrompt() {
           break;
       }
     });
+}
+
+// checkboxChoice functions below
+
+// view all employees function
+function viewEmployees() {
+  connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;", 
+  function(err, res) {
+    if (err) throw err
+    log.green('------ Employees Table ------', '\n');
+    console.table(res);
+    startPrompt();
+})
 }
