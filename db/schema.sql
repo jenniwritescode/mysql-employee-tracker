@@ -8,7 +8,7 @@ USE employee_DB;
 -- DEPARTMENT TABLE ----
 CREATE TABLE department (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(30)
+  dept_name VARCHAR(30)
 );
 -- ROLE TABLE ----
 CREATE TABLE role (
@@ -30,13 +30,13 @@ CREATE TABLE employee (
 );
 
 -- DEPARTMENT SEEDS -----
-INSERT INTO department (name)
+INSERT INTO department (dept_name)
 VALUE ("Customer Service");
-INSERT INTO department (name)
+INSERT INTO department (dept_name)
 VALUE ("Sales");
-INSERT INTO department (name)
+INSERT INTO department (dept_name)
 VALUE ("Finance");
-INSERT INTO department (name)
+INSERT INTO department (dept_name)
 VALUE ("Accounting");
 
 -- ROLE SEEDS -------
