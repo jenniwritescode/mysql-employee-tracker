@@ -185,8 +185,6 @@ async function addEmployee() {
             if (data.fullName === manager) {
               managerId = data.id;
               managerName = data.fullName;
-              console.log(managerId);
-              console.log(managerName);
               continue;
             }
           }
@@ -240,19 +238,19 @@ async function updateEmployee() {
     ]);
     const newRoleId = await getRoleId(newTitle);
 
-    log.red(
-      "Updating employee with last name " +
+    log.pink(
+      '\n' + "Updating employee with last name " +
         empLastName +
         " with new role " +
-        newTitle
+        newTitle + '\n'
     );
 
-    connection.query('UPDATE employee SET last_name = ? WHERE role_id = ?', [
-      empLastName, newRoleId
+    connection.query('UPDATE employee SET role_id = ? WHERE last_name = ?', [
+      newRoleId, empLastName
     ],
       async (err, res) => {
         if (err) throw err;
-        log.green("Employee role has been updated..");
+        log.green('\n' + "Employee role has been updated." + '\n');
         startPrompt();
       });
   } catch (error) {

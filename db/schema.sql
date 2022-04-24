@@ -38,6 +38,10 @@ INSERT INTO department (dept_name)
 VALUE ("Finance");
 INSERT INTO department (dept_name)
 VALUE ("Accounting");
+INSERT INTO department (dept_name)
+VALUE ("Legal");
+INSERT INTO department (dept_name)
+VALUE ("Executive Management");
 
 -- ROLE SEEDS -------
 INSERT INTO role (title, salary, department_id)
@@ -54,22 +58,31 @@ INSERT INTO role (title, salary, department_id)
 VALUE ("Lead Accountant", 120000, 4);
 INSERT INTO role (title, salary, department_id)
 VALUE ("Accountant I", 85000, 4);
+INSERT INTO role (title, salary, department_id)
+VALUE ("Lawyer", 185000, 5);
+INSERT INTO role (title, salary, department_id)
+VALUE ("Chief Executive Officer", 300000, 6);
+
 
 -- EMPLOYEE SEEDS -------
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Jessica", "Jones", null, 1);
+VALUE ("Jessica", "Jones", null, 9);
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Trish", "Walker", 1, 2);
+VALUE ("Reva", "Connors", 1, 1);
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Jeri","Hogarth", null, 3);
+VALUE ("Trish", "Walker", 2, 2);
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Luke", "Cage", 3, 4);
+VALUE ("Jeri","Hogarth", 1, 3);
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Griffin", "Sinclair", null, 5);
+VALUE ("Luke", "Cage", 4, 4);
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Malcolm", "Ducasse", null, 6);
+VALUE ("Griffin", "Sinclair", 1, 5);
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Audrey", "Eastman", 6, 7);
+VALUE ("Malcolm", "Ducasse", 1, 6);
+INSERT INTO employee (first_name, last_name, manager_id, role_id)
+VALUE ("Audrey", "Eastman", 7, 7);
+INSERT INTO employee (first_name, last_name, manager_id, role_id)
+VALUE ("Hope", "Shlottman", 1, 8);
 
 -- SELECT COMMANDS FOR SQL WORKBENCH --
 SELECT * FROM department;
