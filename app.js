@@ -35,6 +35,8 @@ function startPrompt() {
           "View all Employees",
           "View all Employees By Role",
           "View all Employees By Department",
+          "View all Departments",
+          "View all Roles",
           "Add an Employee",
           "Update Employee",
           "Add a Role",
@@ -55,6 +57,12 @@ function startPrompt() {
         case "View all Employees By Department":
           viewEmpByDept();
           break;
+        case "View all Departments":
+          viewDepts();
+          break;
+        case "View all Roles":
+          viewRoles();
+          break;
         case "Add an Employee":
           addEmployee();
           break;
@@ -65,7 +73,7 @@ function startPrompt() {
           addRole();
           break;
         case "Add a Department":
-          // addDept();
+          addDept();
           break;
         case "EXIT":
           log.red("\n", "Exiting Application...");
@@ -207,51 +215,97 @@ async function addEmployee() {
 // add role function
 async function addRole() {
   const addNewRole = await inquirer.prompt([
-          {
-            name: "title",
-            type: "input",
-            message: "Enter role title:",
-          },
-          {
-            name: "salary",
-            type: "input",
-            message: "Enter role salary:",
-          },
-        ])
-        connection.query(
-          "SELECT department.id, department.dept_name FROM department ORDER by department.id;",
-          async (err, res) => {
-            if (err) throw err;
-            const { deptName } = await inquirer.prompt([
-              {
-                name: "deptName",
-                type: "list",
-                choices: () => res.map((res) => res.dept_name),
-                message: "Choose the department for this role: ",
-              },
-            ]);
-            let deptId;
-            for (const row of res) {
-              if (row.dept_name === deptName) {
-                deptId = row.id;
-                continue;
-              }
-            }  
-          connection.query(
-            "INSERT INTO role SET ?",
-            {
-              title: addNewRole.title,
-              salary: addNewRole.salary,
-              department_id: deptId
-            },
-            function (err) {
-              if (err) throw err;
-              log.green("New Role " + addNewRole.title + " has been added.");
-              startPrompt();
-            }
-          );
-        });
+    {
+      name: "title",
+      type: "input",
+      message: "Enter role title:",
+    },
+    {
+      name: "salary",
+      type: "input",
+      message: "Enter role salary:",
+    },
+  ]);
+  connection.query(
+    "SELECT department.id, department.dept_name FROM department ORDER by department.id;",
+    async (err, res) => {
+      if (err) throw err;
+      const { deptName } = await inquirer.prompt([
+        {
+          name: "deptName",
+          type: "list",
+          choices: () => res.map((res) => res.dept_name),
+          message: "Choose the department for this role: ",
+        },
+      ]);
+      let deptId;
+      for (const row of res) {
+        if (row.dept_name === deptName) {
+          deptId = row.id;
+          continue;
+        }
+      }
+      connection.query(
+        "INSERT INTO role SET ?",
+        {
+          title: addNewRole.title,
+          salary: addNewRole.salary,
+          department_id: deptId,
+        },
+        function (err) {
+          if (err) throw err;
+          log.green('\n' + "New Role " + addNewRole.title + " has been added." + '\n');
+          viewRoles();
+        }
+      );
     }
+  );
+}
 
 // add department function
-// code goes here
+async function addDept() {
+  const addNewDept = await inquirer.prompt([
+    {
+      name: "newDept",
+      type: "input",
+      message: "Enter new department name:",
+    },
+  ])
+  connection.query(
+    "INSERT INTO department SET ?",
+    {
+      dept_name: addNewDept.newDept,
+    },
+    function (err) {
+      if (err) throw err;
+      log.green("New department " + addNewDept.newDept + " has been added.");
+      viewDepts();
+    }
+  );
+}
+
+// view all departments
+function viewDepts() {
+  connection.query(
+    "SELECT * FROM department;",
+    function (err, res) {
+      if (err) throw err;
+      log.green("\n", "------ List of All Departments ------", "\n");
+      console.table(res);
+    }
+  );
+  startPrompt();
+}
+
+// view all roles
+function viewRoles() {
+  connection.query(
+    "SELECT * FROM role;",
+    function (err, res) {
+      if (err) throw err;
+      log.green("\n", "------ List of All Roles ------", "\n");
+      console.table(res);
+    }
+  );
+  startPrompt();
+}
