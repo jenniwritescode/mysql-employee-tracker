@@ -62,13 +62,11 @@ function startPrompt() {
           // updateEmployee();
           break;
         case "Add a Role":
-          // addRole();
+          addRole();
           break;
-
         case "Add a Department":
           // addDept();
           break;
-
         case "EXIT":
           log.red("\n", "Exiting Application...");
           connection.end();
@@ -180,10 +178,10 @@ async function addEmployee() {
             }
           }
         }
-        log.green(
+        console.log(
           "\n" +
             "New employee has been added. Please select View all Employees to verify." +
-            "/n"
+            "\n"
         );
         connection.query(
           "INSERT INTO employee SET ?",
@@ -202,3 +200,58 @@ async function addEmployee() {
     }
   );
 }
+
+// update employee function
+// code goes here
+
+// add role function
+async function addRole() {
+  const addNewRole = await inquirer.prompt([
+          {
+            name: "title",
+            type: "input",
+            message: "Enter role title:",
+          },
+          {
+            name: "salary",
+            type: "input",
+            message: "Enter role salary:",
+          },
+        ])
+        connection.query(
+          "SELECT department.id, department.dept_name FROM department ORDER by department.id;",
+          async (err, res) => {
+            if (err) throw err;
+            const { deptName } = await inquirer.prompt([
+              {
+                name: "deptName",
+                type: "list",
+                choices: () => res.map((res) => res.dept_name),
+                message: "Choose the department for this role: ",
+              },
+            ]);
+            let deptId;
+            for (const row of res) {
+              if (row.dept_name === deptName) {
+                deptId = row.id;
+                continue;
+              }
+            }  
+          connection.query(
+            "INSERT INTO role SET ?",
+            {
+              title: addNewRole.title,
+              salary: addNewRole.salary,
+              department_id: deptId
+            },
+            function (err) {
+              if (err) throw err;
+              log.green("New Role " + addNewRole.title + " has been added.");
+              startPrompt();
+            }
+          );
+        });
+    }
+
+// add department function
+// code goes here
