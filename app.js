@@ -38,7 +38,7 @@ function startPrompt() {
           "View all Departments",
           "View all Roles",
           "Add an Employee",
-          "Update Employee",
+          "Update Employee Role",
           "Add a Role",
           "Add a Department",
           "EXIT",
@@ -66,8 +66,8 @@ function startPrompt() {
         case "Add an Employee":
           addEmployee();
           break;
-        case "Update an Employee":
-          // updateEmployee();
+        case "Update Employee Role":
+          updateEmployee();
           break;
         case "Add a Role":
           addRole();
@@ -210,7 +210,57 @@ async function addEmployee() {
 }
 
 // update employee function
-// code goes here
+function updateEmployee() {
+  connection.query(
+    "SELECT employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id;",
+    async (err, res) => {
+      if (err) throw err;
+      const { updateEmp } = await inquirer.prompt([
+        {
+          name: "updateEmp",
+          type: "list",
+          message: "Enter the last name of the employee you want to update:",
+          choices: () => res.map((res) => res.last_name),
+        },
+      ]);
+    }
+  );
+  connection.query(
+    "SELECT role.title FROM role ORDER by role.title;",
+    async (err, res) => {
+      if (err) throw err;
+      const { newTitle } = await inquirer.prompt([
+        {
+          name: "newTitle",
+          type: "list",
+          message: "Enter the employee's new title:",
+          choices: () => res.map((res) => res.title),
+        },
+      ]);
+      let roleId;
+      for (const row of res) {
+        if (row.title === newTitle) {
+          roleId = row.id;
+          continue;
+        }
+      }
+      connection.query(
+        "UPDATE employee SET WHERE ?",
+        {
+          last_name: updateEmp.lastName,
+        },
+        {
+          role_id: roleId,
+        },
+        function (err) {
+          if (err) throw err;
+          log.green("\n" + "Employee role has been updated." + "\n");
+          viewEmployees();
+        }
+      );
+    }
+  );
+}
 
 // add role function
 async function addRole() {
@@ -254,7 +304,9 @@ async function addRole() {
         },
         function (err) {
           if (err) throw err;
-          log.green('\n' + "New Role " + addNewRole.title + " has been added." + '\n');
+          log.green(
+            "\n" + "New Role " + addNewRole.title + " has been added." + "\n"
+          );
           viewRoles();
         }
       );
@@ -270,7 +322,7 @@ async function addDept() {
       type: "input",
       message: "Enter new department name:",
     },
-  ])
+  ]);
   connection.query(
     "INSERT INTO department SET ?",
     {
@@ -284,28 +336,22 @@ async function addDept() {
   );
 }
 
-// view all departments
+// view all departments function
 function viewDepts() {
-  connection.query(
-    "SELECT * FROM department;",
-    function (err, res) {
-      if (err) throw err;
-      log.green("\n", "------ List of All Departments ------", "\n");
-      console.table(res);
-    }
-  );
+  connection.query("SELECT * FROM department;", function (err, res) {
+    if (err) throw err;
+    log.green("\n", "------ List of All Departments ------", "\n");
+    console.table(res);
+  });
   startPrompt();
 }
 
-// view all roles
+// view all roles function
 function viewRoles() {
-  connection.query(
-    "SELECT * FROM role;",
-    function (err, res) {
-      if (err) throw err;
-      log.green("\n", "------ List of All Roles ------", "\n");
-      console.table(res);
-    }
-  );
+  connection.query("SELECT * FROM role;", function (err, res) {
+    if (err) throw err;
+    log.green("\n", "------ List of All Roles ------", "\n");
+    console.table(res);
+  });
   startPrompt();
 }
