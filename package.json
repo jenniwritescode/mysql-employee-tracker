@@ -24,6 +24,7 @@
     "inquirer-autocomplete-prompt": "^2.0.0",
     "inquirer-checkbox-status": "^1.0.0",
     "mysql": "^2.18.1",
-    "mysql2": "^2.3.3"
+    "mysql2": "^2.3.3",
+    "util": "^0.12.4"
   }
 }

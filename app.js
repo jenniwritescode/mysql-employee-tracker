@@ -1,9 +1,12 @@
 // dependencies
+"use strict";
 const mysql = require("mysql");
+const util = require("util");
 const fs = require("fs");
 const consoleTable = require("console.table");
 const inquirer = require("inquirer");
 const LogColors = require("./logColors");
+const { resolve } = require("path");
 
 const log = new LogColors();
 
@@ -16,6 +19,8 @@ const connection = mysql.createConnection({
   database: "employee_DB",
   socketPath: "/tmp/mysql.sock",
 });
+
+connection.query = util.promisify(connection.query).bind(connection);
 
 connection.connect(function (err) {
   if (err) throw err;
@@ -210,56 +215,92 @@ async function addEmployee() {
 }
 
 // update employee function
-function updateEmployee() {
-  connection.query(
-    "SELECT employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id;",
-    async (err, res) => {
-      if (err) throw err;
-      const { updateEmp } = await inquirer.prompt([
-        {
-          name: "updateEmp",
-          type: "list",
-          message: "Enter the last name of the employee you want to update:",
-          choices: () => res.map((res) => res.last_name),
-        },
-      ]);
-    }
-  );
-  connection.query(
-    "SELECT role.title FROM role ORDER by role.title;",
-    async (err, res) => {
-      if (err) throw err;
-      const { newTitle } = await inquirer.prompt([
-        {
-          name: "newTitle",
-          type: "list",
-          message: "Enter the employee's new title:",
-          choices: () => res.map((res) => res.title),
-        },
-      ]);
+async function updateEmployee() {
+  try {
+    const updateEmp = await getEmpLastName();
+    let choices = updateEmp.map((updateEmp) => updateEmp.last_name);
+    let { empLastName } = await inquirer.prompt([
+      {
+        name: "empLastName",
+        type: "list",
+        message: "Select the last name of the employee you want to update:",
+        choices: choices,
+      },
+    ]);
+
+    const updateEmpRole = await getEmpTitle();
+    let moreChoices = updateEmpRole.map((updateEmpRole) => updateEmpRole.title);
+    let { newTitle } = await inquirer.prompt([
+      {
+        name: "newTitle",
+        type: "list",
+        message: "Select the employee's new title:",
+        choices: moreChoices,
+      },
+    ]);
+    const newRoleId = await getRoleId(newTitle);
+
+    log.red(
+      "Updating employee with last name " +
+        empLastName +
+        " with new role " +
+        newTitle
+    );
+
+    connection.query('UPDATE employee SET last_name = ? WHERE role_id = ?', [
+      empLastName, newRoleId
+    ],
+      async (err, res) => {
+        if (err) throw err;
+        log.green("Employee role has been updated..");
+        startPrompt();
+      });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function getRoleId(data) {
+  const queryName = "SELECT role.id, role.title FROM role ORDER BY role.id";
+  return new Promise((resolve, reject) => {
+    let result = connection.query(queryName, (err, res) => {
+      if (err) {
+        reject(err);
+      }
       let roleId;
       for (const row of res) {
-        if (row.title === newTitle) {
+        if (row.title === data) {
           roleId = row.id;
-          continue;
+          resolve(roleId);
         }
       }
-      connection.query(
-        "UPDATE employee SET WHERE ?",
-        {
-          last_name: updateEmp.lastName,
-        },
-        {
-          role_id: roleId,
-        },
-        function (err) {
-          if (err) throw err;
-          log.green("\n" + "Employee role has been updated." + "\n");
-          viewEmployees();
-        }
-      );
-    }
-  );
+    });
+  });
+}
+
+function getEmpLastName() {
+  const queryName =
+    "SELECT employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id";
+  return new Promise((resolve, reject) => {
+    let result = connection.query(queryName, (err, res) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
+}
+
+function getEmpTitle() {
+  const queryName = "SELECT role.title FROM role";
+  return new Promise((resolve, reject) => {
+    let result = connection.query(queryName, (err, res) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    });
+  });
 }
 
 // add role function
