@@ -31,7 +31,7 @@ See demo video link below for more details.
 
 ## Links
 
-- [Link to Demo Video](https://drive.google.com/file/d/1a-juSriqjVfgLTTbaIzJH-RJZyT33sGf/view?usp=sharing)
+- [Link to Demo Video](https://drive.google.com/file/d/1-TikCIMvfTEy1oLPNZlQuBskX21Mzig9/view?usp=sharing)
 
 - [Link to GitHub Repo](https://github.com/jenniwritescode/mysql-employee-tracker)
 
